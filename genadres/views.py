@@ -24,7 +24,7 @@ class GenadresView(APIView):
         return Response({"list_adreses":  resolt}, status=status.HTTP_200_OK)
 
     def filter(self, adres):
-        #print(adres)
+        print(adres)
         adres = adres.replace('-','')
         if adres=='':
             return False
@@ -35,7 +35,7 @@ class GenadresView(APIView):
             else:
                 return False
         # регали    **R****L** 01R2104A10 01R1027A15 01R0517H1
-        elif adres[2]=='R' and adres[7].isalpha():
+        elif adres!="PARKING" and adres[2]=='R' and adres[7].isalpha():
             if adres[0:2].isdigit() and adres[3:7].isdigit():
                 return True
             else:
