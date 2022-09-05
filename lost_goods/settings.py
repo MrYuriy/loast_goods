@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-kuvqrp7-+1ts8$-&var1_$fop@1iq!4g#-!h(cfikvj19!yd$6
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Application definition
 
@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'lost_goods.urls'
@@ -60,7 +61,7 @@ ROOT_URLCONF = 'lost_goods.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,4 +129,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 django_heroku.settings(locals())
-DISABLE_COLLECTSTATIC=1
+#DISABLE_COLLECTSTATIC=1
