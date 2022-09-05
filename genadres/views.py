@@ -24,7 +24,7 @@ class GenadresView(APIView):
         return Response({"list_adreses":  resolt}, status=status.HTTP_200_OK)
 
     def filter(self, adres):
-        print(adres)
+        #print(adres)
         adres = adres.replace('-','')
         if adres=='':
             return False
@@ -103,7 +103,7 @@ class GenadresView(APIView):
             resolt = []
 
             for adres in inventory_dictionary:
-                resolt.append(str(adres)+"-"+str(inventory_dictionary[adres]))
+                resolt.append(str(adres)+" - "+str(inventory_dictionary[adres]))
 
             return resolt
         elif not inventory_dictionary:
@@ -112,7 +112,7 @@ class GenadresView(APIView):
             for adres in adreses_list:
                 if adres in inventory_dictionary.keys():
                     #print (adres,inventory_dictionary[adres])
-                    resolt.append(str(adres)+"-"+str(inventory_dictionary[adres]))
+                    resolt.append(str(adres)+" - "+str(inventory_dictionary[adres]))
 
                 else:
                     resolt.append(adres)
