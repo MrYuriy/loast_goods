@@ -1,4 +1,4 @@
-from operator import inv
+from operator import inv, truediv
 from pydoc import cli
 from select import select
 from django.shortcuts import render
@@ -34,6 +34,10 @@ class GenadresView(APIView):
                 return True
             else:
                 return False
+
+        elif (adres[0:1]=="WK" or adres[0:1]=="WS") and adres[2:].isgit():
+            return True
+            
         # регали    **R****L** 01R2104A10 01R1027A15 01R0517H1
         elif adres!="PARKING" and adres[2]=='R' and adres[7].isalpha():
             if adres[0:2].isdigit() and adres[3:7].isdigit():
