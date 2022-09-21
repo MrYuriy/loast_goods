@@ -50,7 +50,7 @@ class GenadresView(APIView):
                 return True
             else:
                 return False
-        elif adres[:7]=="SZUBZAM" and (adres[7:].isdigit() or adres[7:]==''):
+        elif adres[:7]=="SZYB-ZAM" and (adres[7:].isdigit() or adres[7:]==''):
             return True
         elif adres=='INRACK80':
             return True
@@ -120,5 +120,8 @@ class GenadresView(APIView):
 
                 else:
                     resolt.append(adres)
+            for adres_invent in inventory_dictionary.keys():
+                if adres_invent not in adreses_list:
+                    resolt.append(str(adres_invent)+" - "+str(inventory_dictionary[adres_invent]))
                     #print(adres)
             return (resolt)
