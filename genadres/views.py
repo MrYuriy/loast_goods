@@ -35,7 +35,7 @@ class GenadresView(APIView):
             else:
                 return False
 
-        elif (adres[0:1]=="WK" or adres[0:1]=="WS") and adres[2:].isgit():
+        elif (adres[0:1]=="WK" or adres[0:1]=="WS") and adres[2:].isdigit():
             return True
             
         # регали    **R****L** 01R2104A10 01R1027A15 01R0517H1
