@@ -17,7 +17,7 @@ class GenadresView(APIView):
         resolt = []
         inventory = request.data['inventory']
         
-        adreses = request.data['adreses']
+        adreses = request.data['adreses'] + request.data['adreses_archive'] if request.data['adreses_archive'] else []
         resolt = self.adrese_and_qantity(self.inventory_transaction_list(adreses),self.inventory_dict(inventory))
         #print(resolt)
         
@@ -25,8 +25,9 @@ class GenadresView(APIView):
 
     def filter(self, adres):
         #print(adres)
+        adres = str(adres)
         adres = adres.replace('-','')
-        if adres=='':
+        if adres=='' or adres == None or len(adres)<=4:
             return False
         # куветки   K*******  K1204503  // вяти      W**** W0123 // карнизи   D**** D1330 
         if adres[0]=='K' or adres[0]=='W' or adres[0]=='D':
@@ -37,7 +38,7 @@ class GenadresView(APIView):
 
         elif (adres[0:1]=="WK" or adres[0:1]=="WS") and adres[2:].isdigit():
             return True
-            
+                
         # регали    **R****L** 01R2104A10 01R1027A15 01R0517H1
         elif adres!="PARKING" and adres[2]=='R' and adres[7].isalpha():
             if adres[0:2].isdigit() and adres[3:7].isdigit():
