@@ -51,6 +51,7 @@ class GenadresView(APIView):
                 return True
             else:
                 return False
+
         elif adres[:8]=="SZYB-ZAM" :
             return True
         elif adres=='INRACK80':
