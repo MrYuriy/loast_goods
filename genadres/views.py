@@ -8,8 +8,6 @@ from rest_framework import status
 from rest_framework import permissions
 from .models import Adres
 from .serializers import GenadresSerializer
-import ast
-import numpy
 from .models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -82,9 +80,11 @@ class GenadresView(APIView):
     def adrese_and_qantity(self, adreses_list, inventory_dictionary):
         resolt = []
         if not adreses_list :
-            #print(inventory_dictionary)
-            resolt = numpy.array(list(inventory_dictionary.items()))
-            #print(resolt)
+            
+            #resolt = numpy.array(list(inventory_dictionary.items()))
+            for adres, qty in inventory_dictionary.items():
+                resolt.append([adres,str(qty)])
+
             resolt = []
 
             for adres in inventory_dictionary:
