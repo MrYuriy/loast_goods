@@ -10,21 +10,22 @@ from .models import Adres
 from .serializers import GenadresSerializer
 import ast
 import numpy
+from .models import User
+from django.http import HttpResponse
+from django.shortcuts import redirect
 
 class GenadresView(APIView):
     permission_classes = [permissions.AllowAny]
     def post(self, request, *args, **kwargs):
-        resolt = []
-        inventory = request.data['inventory']
-        
-        adreses = request.data['adreses'] + request.data['adreses_archive'] if request.data['adreses_archive'] else []
-        resolt = self.adrese_and_qantity(self.inventory_transaction_list(adreses),self.inventory_dict(inventory))
-        #print(resolt)
-        
+        inventory_adreses = request.data['inventory_adreses']
+        inventory_qtys = request.data['inventory_qtys']
+        adreses = request.data['adreses'] + request.data['adreses_archive'] 
+        resolt = self.adrese_and_qantity(
+            self.inventory_transaction_list(adreses), 
+            self.inventory_dict(inventory_adreses,inventory_qtys))   
         return Response({"list_adreses":  resolt}, status=status.HTTP_200_OK)
 
     def filter(self, adres):
-        #print(adres)
         adres = str(adres)
         adres = adres.replace('-','')
         if adres=='' or adres == None or len(adres)<=4:
@@ -63,41 +64,19 @@ class GenadresView(APIView):
 
     def inventory_transaction_list(self, list_adreses):
         clin_list = []
-        if list_adreses[0]==None:
+        if not list_adreses:
             return clin_list  
         for adres in list_adreses:
             if self.filter(adres) and adres not in clin_list:
                 clin_list.append(adres)
         return (clin_list)
-
-    def generate_invenlist(self, inventory):
-        inventory_list = []
-        #print("OK!!!!!!!!")
-        for i in range(0,len(inventory),2):
-            #print(inventory[i],inventory[i+1])
-            if inventory[i+1] or inventory[i] != None:
-                #print(inventory[i],'------',"------",inventory[i+1])
-                quantuty = int(inventory[i+1])
-                inventory_list.append([inventory[i],int(quantuty)])
-            else:
-                None
-                
-        #print(inventory_list)
-        return inventory_list
-
     
-    def inventory_dict(self, inventory):
-        inventlist = self.generate_invenlist(inventory)
-        inventory_dictionary = {}  
-        #print('inventory list',inventlist)
-        for adresquantity in inventlist:
-            adres = str(adresquantity[0])
-            quantity = adresquantity[1]
-            if self.filter(adres):
-                if adres in inventory_dictionary.keys():
-                    inventory_dictionary[adres] = inventory_dictionary[adres]+quantity
-                else:
-                    inventory_dictionary[adres] = quantity
+    def inventory_dict(self, adreses,inventory_qtys):
+        inventory_dictionary = {}
+        for i in range(len(adreses)):
+            if adreses[i] in inventory_dictionary:
+                inventory_dictionary[adreses[i]] += int(inventory_qtys[i])
+            inventory_dictionary[adreses[i]] = int(inventory_qtys[i])
         return (inventory_dictionary)
 
     def adrese_and_qantity(self, adreses_list, inventory_dictionary):
@@ -127,3 +106,61 @@ class GenadresView(APIView):
                     resolt.append(str(adres_invent)+" - "+str(inventory_dictionary[adres_invent]))
                     #print(adres)
             return (resolt)
+        
+
+
+def home(request):
+    users = User.objects.all()
+    
+    return render(request, 'genadres/home.html',{"users": users})
+
+def get_sheet(request):
+    user_name = request.GET.get('username')
+   
+    user = User.objects.filter(name=user_name).last()
+    
+    url = f"https://test-u-murex.vercel.app/?from_location={user.from_location}&to_location={user.to_location}&inventory_adres={user.inventory_adres}&inventory_qty={user.inventory_qty}&from_location_arc={user.from_location_arc}&to_location_arc={user.to_location_arc}"
+    return redirect(url)
+
+def create_user(request):
+    alphabet = "A B C D E F G H I K L M N O P Q R S T V X Y Z".split()
+    user_parametrs = ['from_location', 
+                 'to_location', 
+                 'inventory_adres', 
+                 'inventory_qty', 
+                 'from_location_arc', 
+                 'to_location_arc']
+    return render(
+        request, 
+        'genadres/add-user.html', 
+        {'alphabet':alphabet, "user_parametrs":user_parametrs}
+        )
+
+
+def save_user(request):
+    name_area = request.GET.get('user-name')
+    from_location_area = request.GET.get('from_location')
+    to_location_area = request.GET.get('to_location')
+
+    inventory_adres_area = request.GET.get('inventory_adres')
+    inventory_qty_area = request.GET.get('inventory_qty')
+
+    from_location_arc_area = request.GET.get('from_location_arc')
+    to_location_arc_area = request.GET.get('to_location_arc')
+
+    
+
+    user = User(
+        name = name_area,
+        from_location = from_location_area,
+        to_location = to_location_area,
+        inventory_adres = inventory_adres_area,
+        inventory_qty = inventory_qty_area,
+        from_location_arc = from_location_arc_area,
+        to_location_arc = to_location_arc_area
+    )
+
+    user.save()
+    return redirect("home")
+    
+
