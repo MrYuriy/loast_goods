@@ -18,6 +18,7 @@ class GenadresView(APIView):
         inventory_adreses = request.data['inventory_adreses']
         inventory_qtys = request.data['inventory_qtys']
         adreses = request.data['adreses'] + request.data['adreses_archive'] 
+        #print(adreses)
         resolt = self.adrese_and_qantity(
             self.inventory_transaction_list(adreses), 
             self.inventory_dict(inventory_adreses,inventory_qtys))   
@@ -70,13 +71,16 @@ class GenadresView(APIView):
         return (clin_list)
     
     def inventory_dict(self, adreses,inventory_qtys):
-        inventory_dictionary = {}
-        for i in range(len(adreses)):
-            if adreses[i] in inventory_dictionary:
-                inventory_dictionary[adreses[i]] += int(inventory_qtys[i])
-            inventory_dictionary[adreses[i]] = int(inventory_qtys[i])
-        return (inventory_dictionary)
-
+        
+        if adreses != [None] and inventory_qtys != [None] :
+            
+            inventory_dictionary = {}
+            for i in range(len(adreses)):
+                if adreses[i] in inventory_dictionary:
+                    inventory_dictionary[adreses[i]] += int(inventory_qtys[i])
+                inventory_dictionary[adreses[i]] = int(inventory_qtys[i])
+            return (inventory_dictionary)
+        return {}
     def adrese_and_qantity(self, adreses_list, inventory_dictionary):
         resolt = []
         if not adreses_list :
